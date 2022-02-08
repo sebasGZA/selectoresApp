@@ -22,14 +22,14 @@ export class PaisesService {
     return this.httpSvc.get<PaisSmall[]>(url)
   }
 
-  getPaisPorCCA2(cca2: string): Observable<Pais | null> {
+  getPaisPorCCA2(cca2: string): Observable<Pais[]> {
 
     if(!cca2){
-      return of(null)
+      return of([])
     }
 
     const url: string = `${this._baseUrl}/alpha/${cca2}`
-    return this.httpSvc.get<Pais>(url)
+    return this.httpSvc.get<Pais[]>(url)
   }
 
 }

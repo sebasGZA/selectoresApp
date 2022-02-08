@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PaisesService } from '../../services/paises.service';
-import { PaisSmall } from '../../interfaces/paises.interface';
-import { switchMap, tap } from 'rxjs';
+import { PaisSmall, Pais } from '../../interfaces/paises.interface';
+import { switchMap, tap, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-selector-page',
@@ -49,9 +49,21 @@ export class SelectorPageComponent implements OnInit {
         this.paises = paises
       })
 
-      this.miFormulario.get('pais')?.valueChanges
-      .subscribe(paisCode => {
-        console.log(paisCode)
+    this.miFormulario.get('pais')?.valueChanges
+      .pipe(
+        tap(() => {
+          this.fronteras = []
+          this.miFormulario.get('frontera')?.reset('')
+        }),
+        switchMap(cca2 =>
+          this.paisesSvc.getPaisPorCCA2(cca2)
+        )
+      )
+      .subscribe((pais) => {
+        if (pais?.length > 0) {
+          this.fronteras = pais[0]?.borders
+        }
+
       })
 
   }
