@@ -15,13 +15,18 @@ export class SelectorPageComponent implements OnInit {
   miFormulario: FormGroup = this.formBuilderSvc.group({
     region: ['', [Validators.required]],
     pais: ['', [Validators.required]],
+    // frontera: [{value: '', disabled:true}, [Validators.required]]
     frontera: ['', [Validators.required]]
+
   })
+
 
   //Llenar selectores
   regiones: string[] = []
   paises: PaisSmall[] = []
   fronteras: string[] = []
+
+  cargando: boolean = false
 
   constructor(private formBuilderSvc: FormBuilder, private paisesSvc: PaisesService) { }
 
@@ -40,6 +45,8 @@ export class SelectorPageComponent implements OnInit {
       .pipe(
         tap(() => {
           this.miFormulario.get('pais')?.reset('')
+          this.cargando = true
+          // this.miFormulario.get('frontera')?.disable()
         }),
         switchMap(region =>
           this.paisesSvc.getPaisesPorRegion(region)
@@ -47,6 +54,7 @@ export class SelectorPageComponent implements OnInit {
       )
       .subscribe(paises => {
         this.paises = paises
+        this.cargando = false
       })
 
     this.miFormulario.get('pais')?.valueChanges
@@ -54,6 +62,8 @@ export class SelectorPageComponent implements OnInit {
         tap(() => {
           this.fronteras = []
           this.miFormulario.get('frontera')?.reset('')
+          this.cargando = true
+          // this.miFormulario.get('frontera')?.enable()
         }),
         switchMap(cca2 =>
           this.paisesSvc.getPaisPorCCA2(cca2)
@@ -63,6 +73,7 @@ export class SelectorPageComponent implements OnInit {
         if (pais?.length > 0) {
           this.fronteras = pais[0]?.borders
         }
+        this.cargando = false
 
       })
 
